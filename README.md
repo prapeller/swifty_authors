@@ -1,1 +1,1 @@
-# swifty_authors
+# swifty_authors restfull api with django, docker, celery, redis, nginx and more
