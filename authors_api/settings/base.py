@@ -1,13 +1,16 @@
+from datetime import timedelta
 from pathlib import Path
-# swifty_authors
-import corsheaders.middleware
-import django.contrib.auth.hashers
+import environ
 
+env = environ.Env()
+
+# swifty_authors/
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent
+
 # swifty_authors/core_apps
 APPS_DIR = ROOT_DIR / 'core_apps'
 
-DEBUG = True
+DEBUG = env.bool('DEBUG', False)
 
 DJANGO_APPS = [
     'django.contrib.auth',
@@ -20,7 +23,7 @@ DJANGO_APPS = [
 ]
 
 SITE_ID = 1
-ADMIN_URL = 'supersecret/'
+ADMIN_URL = 'supersecretadminurl/'
 ADMINS = [("""Pavel Mirosh""", 'pavelmirosh@gmail.com')]
 MANAGERS = ADMINS
 
@@ -74,6 +77,12 @@ TEMPLATES = [
     },
 ]
 
+WSGI_APPLICATION = 'authors_api.wsgi.application'
+
+#export DATABASE_URL=postgres://postgres:postgres@127.0.0.1:5432/authors_db
+DATABASES = {"default": env.db("DATABASE_URL",)}
+DATABASES["default"]["ATOMIC_REQUESTS"] = True
+
 PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.Argon2PasswordHasher',
     'django.contrib.auth.hashers.PBKDF2PasswordHasher',
@@ -81,21 +90,11 @@ PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
 ]
 
-WSGI_APPLICATION = 'authors_api.wsgi.application'
-
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
 ]
 
 LANGUAGE_CODE = 'en-us'
@@ -122,17 +121,6 @@ REST_FRAMEWORK = {
     # ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 100,
-
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        # passing session id (for debugging in browser)
-        'rest_framework.authentication.SessionAuthentication',
-
-        # passing login/password in request.args (http authentification)
-        'rest_framework.authentication.BasicAuthentication',
-
-        # passing token in headers
-        'rest_framework.authentication.TokenAuthentication',
-    ],
 
     'DEFAULT_PERMISSION_CLASSES': [
         # permissions to makeOperations/toViewOnly for authenticated users in current session
@@ -162,16 +150,67 @@ REST_FRAMEWORK = {
 
     # requests.get('http://127.0.0.1:8000/api/users/', headers={'Accept': 'application/json; version=v2'})
     # 'rest_framework.versioning.AcceptHeaderVersioning',
+
+    "EXCEPTION_HANDLER": "core_apps.common.exceptions.common_exception_handler",
+    "NON_FIELD_ERRORS_KEY": "error",
+
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        # passing session id (for debugging in browser)
+        # 'rest_framework.authentication.SessionAuthentication',
+
+        # passing login/password in request.args (http authentification)
+        # 'rest_framework.authentication.BasicAuthentication',
+
+        # passing token in headers
+        # 'rest_framework.authentication.TokenAuthentication',
+
+        # jwt-based authentication
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ],
 }
 
-STATIC_URL = '/static/'
+SIMPLE_JWT = {
+    "AUTH_HEADER_TYPES": (
+        "Bearer",
+        "JWT",
+    ),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    # "SIGNING_KEY": env("SIGNING_KEY"),
+    "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
+    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
+}
+
+DJOSER = {
+    "LOGIN_FIELD": "email",
+    "USER_CREATE_PASSWORD_RETYPE": True,
+    "USERNAME_CHANGED_EMAIL_CONFIMATION": True,
+    "PASSWORD_CHANGED_EMAIL_CONFIRMATION": True,
+    "SEND_CONFIRMATION_EMAIL": True,
+    "PASSWORD_RESET_CONFIRM_URL": "password/reset/confirm/{uid}/{token}",
+    "SET_PASSWORD_RETYPE": True,
+    "PASSWORD_RESET_CONFIRM_RETYPE": True,
+    "USERNAME_RESET_CONFIRM_URL": "email/reset/confirm/{uid}/{token}",
+    "ACTIVATION_URL": "activate/{uid}/{token}",
+    "SEND_ACTIVATION_EMAIL": True,
+    "SERIALIZERS": {
+        "user_create": "core_apps.users.serializers.CreateUserSerializer",
+        "user": "core_apps.users.serializers.UserSerializer",
+        "current_user": "core_apps.users.serializers.UserSerializer",
+        "user_delete": "djoser.serializers.UserDeleteSerializer",
+    },
+}
+
+STATIC_URL = '/staticfiles/'
+STATIC_ROOT = str(ROOT_DIR / 'staticfiles')
 STATICFILES_DIRS = []
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 ]
 
-MEDIA_URL = '/media/'
+MEDIA_URL = '/mediafiles/'
+MEDIA_ROOT = str(ROOT_DIR / 'mediafiles')
 
 CORS_URLS_REGEX = r'^/api/.*$'
 
