@@ -22,6 +22,9 @@ checkvol_static:
 up:
 	docker-compose -f local.yml up -d
 
+restart:
+	docker-compose -f local.yml restart
+
 migrate:
 	docker-compose -f local.yml run --rm api python3 manage.py migrate
 
@@ -35,7 +38,7 @@ backup:
 	docker-compose -f local.yml exec postgres backup
 
 superuser:
-	docker-compose -f local.yml run --rm api python3 manage.py createsuperuser --no-input --clear
+	docker-compose -f local.yml run --rm api python3 manage.py createsuperuser
 
 down:
 	docker-compose -f local.yml down
