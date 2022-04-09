@@ -50,25 +50,5 @@ networks:
 volumes:
   local_postgres_data: {}
   local_postgres_data_backups: {}
-  static_volume: {}
-  media_volume: {}
-
-# for checking env vars: --->
-# docker-compose -f local.yml config
-
-# for building: --->
-# docker-compose -f local.yml up --build -d --remove-orphans
-
-# for checking logs: --->
-# docker-compose -f local.yml logs
-
-# for checking if volumes were created: --->
-# docker volume inspect swifty_authors_local_postgres_data
-#--->>>
-#swifty_authors_local_postgres_data
-#swifty_authors_local_postgres_data_backups
-#swifty_authors_media_volume
-#swifty_authors_static_volume
-
-# for checking postgres backups: --->
-# docker-compose -f local.yml exec postgres backup
+  static_volume:
+  media_volume:
