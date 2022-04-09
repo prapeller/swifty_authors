@@ -1,24 +1,11 @@
 version: "3.9"
 
 services:
-  api:
-    build:
-      context: .
-      dockerfile: ./docker/local/django/Dockerfile
-    command: /start
-    container_name: django-api
-    volumes:
-      - .:/app
-      - static_volume:/app/staticfiles
-      - media_volume:/app/mediafiles
+  mailhog:
+    image: mailhog/mailhog:v1.0.0
+    container_name: mailhog
     ports:
-      - "8000:8000"
-    env_file:
-      - ./.envs/.local/.django
-      - ./.envs/.local/.postgres
-    depends_on:
-      - postgres
-      - mailhog
+      - "8025:8025"
     networks:
       - swifty-authors
 
@@ -35,11 +22,39 @@ services:
     networks:
       - swifty-authors
 
-  mailhog:
-    image: mailhog/mailhog:v1.0.0
-    container_name: mailhog
+  api:
+    build:
+      context: .
+      dockerfile: ./docker/local/django/Dockerfile
+    command: /start
+    container_name: django-api
+    volumes:
+      - .:/app
+      - static_volume:/app/staticfiles
+      - media_volume:/app/mediafiles
+    expose:
+      - "8000"
+    env_file:
+      - ./.envs/.local/.django
+      - ./.envs/.local/.postgres
+    depends_on:
+      - postgres
+      - mailhog
+    networks:
+      - swifty-authors
+
+  nginx:
+    restart: always
+    depends_on:
+      - api
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/mediafiles
+    build:
+      context: ./docker/local/nginx
+      dockerfile: Dockerfile
     ports:
-      - "8025:8025"
+      - "8080:80"
     networks:
       - swifty-authors
 

@@ -23,7 +23,7 @@ DJANGO_APPS = [
 ]
 
 SITE_ID = 1
-ADMIN_URL = 'supersecretadminurl/'
+ADMIN_URL = 'supersecret/'
 ADMINS = [("""Pavel Mirosh""", 'pavelmirosh@gmail.com')]
 MANAGERS = ADMINS
 
