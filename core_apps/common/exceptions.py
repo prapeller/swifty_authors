@@ -15,7 +15,9 @@ def common_exception_handler(exc, context):
 
 
 def _handle_generic_error(exc, context, response):
-    response.data = {"status_code": response.status_code, "errors": response.data}
+    status_code = response.status_code
+    response.data = {"status_code": status_code,
+                     "errors": response.data}
     return response
 
 
@@ -24,4 +26,9 @@ def _handle_not_found_error(exc, context, response):
     if view and hasattr(view, "queryset") and view.queryset is not None:
         status_code = response.status_code
         error_key = view.queryset.model._meta.verbose_name
-        response.data = {"status_code": status_code, "errors": {error_key: response.data.get("detail")}}
+        response.data = {"status_code": status_code,
+                         "errors": {error_key: response.data.get("detail")}}
+
+    else:
+        response = _handle_generic_error(exc, context, response)
+        return response

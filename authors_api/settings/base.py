@@ -109,9 +109,9 @@ USE_TZ = True
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# REST_FRAMEWORK = {
-#     "EXCEPTION_HANDLER": "core_apps.common.exceptions.common_exception_handler",
-#     "NON_FIELD_ERRORS_KEY": "error",
+REST_FRAMEWORK = {
+    "EXCEPTION_HANDLER": "core_apps.common.exceptions.common_exception_handler",
+    "NON_FIELD_ERRORS_KEY": "error",
     # "DEFAULT_RENDERER_CLASSES": [
     #     "rest_framework.renderers.JSONRenderer",
         # 'djangorestframework_camel_case.render.CamelCaseJSONRenderer',
@@ -169,7 +169,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
         # jwt-based authentication
         # "rest_framework_simplejwt.authentication.JWTAuthentication",
     # ],
-# }
+}
 
 # SIMPLE_JWT = {
 #     "AUTH_HEADER_TYPES": (
