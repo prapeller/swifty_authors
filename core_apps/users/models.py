@@ -10,10 +10,10 @@ from .managers import CustomUserManager
 class User(AbstractBaseUser, PermissionsMixin):
     pkid = models.BigAutoField(primary_key=True, editable=False)
     id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    username = models.CharField(verbose_name=_("User name"), db_index=True, max_length=255, unique=True)
-    first_name = models.CharField(verbose_name=_("First name"), max_length=50)
-    last_name = models.CharField(verbose_name=_("Last name"), max_length=50)
-    email = models.EmailField(verbose_name=_("Email address"), db_index=True, unique=True)
+    username = models.CharField(verbose_name=_("username"), db_index=True, max_length=255, unique=True)
+    first_name = models.CharField(verbose_name=_("first name"), max_length=50)
+    last_name = models.CharField(verbose_name=_("last name"), max_length=50)
+    email = models.EmailField(verbose_name=_("email address"), db_index=True, unique=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
@@ -25,8 +25,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = CustomUserManager()
 
     class Meta:
-        verbose_name = _("User")
-        verbose_name_plural = _("Users")
+        verbose_name = _("user")
+        verbose_name_plural = _("users")
 
     def __str__(self):
         return self.username
