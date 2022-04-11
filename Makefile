@@ -25,6 +25,9 @@ up:
 restart:
 	docker-compose -f local.yml restart
 
+pip:
+	docker-compose -f local.yml run --rm api pip install -r requirements/local.txt
+
 migrate:
 	docker-compose -f local.yml run --rm api python3 manage.py migrate
 
@@ -69,3 +72,6 @@ isort-diff:
 
 isort:
 	docker-compose -f local.yml exec api isort . --skip venv --skip migrations
+
+generatekey:
+	python -c 'import secrets; print(secrets.token_urlsafe(38))'
