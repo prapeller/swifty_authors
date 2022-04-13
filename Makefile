@@ -40,6 +40,9 @@ collectstatic:
 backup:
 	docker-compose -f local.yml exec postgres backup
 
+checkbackups:
+	docker-compose -f local.yml exec postgres backups
+
 superuser:
 	docker-compose -f local.yml run --rm api python3 manage.py createsuperuser
 
