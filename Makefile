@@ -10,6 +10,9 @@ checklogs:
 checkvol_postgres:
 	docker volume inspect swifty_authors_local_postgres_data
 
+checkpostgresip:
+	docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' postgres
+
 checkvol_backups:
 	docker volume inspect swifty_authors_local_postgres_data_backups
 

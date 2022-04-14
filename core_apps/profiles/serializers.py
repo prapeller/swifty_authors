@@ -5,31 +5,35 @@ from .models import Profile
 
 
 class ProfileSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(source="user.email")
     username = serializers.CharField(source="user.username")
     first_name = serializers.CharField(source="user.first_name")
     last_name = serializers.CharField(source="user.last_name")
-    email = serializers.EmailField(source="user.email")
+
+    country = CountryField(name_only=True)
+
     full_name = serializers.SerializerMethodField(read_only=True)
     profile_photo = serializers.SerializerMethodField()
-    country = CountryField(name_only=True)
     following = serializers.SerializerMethodField()
 
     class Meta:
         model = Profile
         fields = [
+            "id",
+            "email",
             "username",
             "first_name",
             "last_name",
-            "full_name",
-            "email",
-            "id",
-            "profile_photo",
+
             "phone_number",
             "about_me",
             "gender",
-            "country",
             "city",
+            "country",
             "twitter_handle",
+
+            "full_name",
+            "profile_photo",
             "following",
         ]
 
@@ -61,12 +65,13 @@ class UpdateProfileSerializer(serializers.ModelSerializer):
         model = Profile
         fields = [
             "phone_number",
-            "profile_photo",
             "about_me",
             "gender",
-            "country",
             "city",
+            "country",
             "twitter_handle",
+
+            "profile_photo",
         ]
 
 
@@ -82,8 +87,10 @@ class FollowingSerializer(serializers.ModelSerializer):
             "username",
             "first_name",
             "last_name",
-            "profile_photo",
+
             "about_me",
+
             "twitter_handle",
+            "profile_photo",
             "following",
         ]

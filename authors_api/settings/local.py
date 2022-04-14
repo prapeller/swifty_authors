@@ -12,6 +12,8 @@ DEFAULT_FROM_EMAIL = "pavelmirosh@gmail.com"
 DOMAIN = env("DOMAIN")
 SITE_NAME = "Swifty Authors"
 
+SIMPLE_JWT["ACCESS_TOKEN_LIFETIME"] = timedelta(minutes=720)
+
 # REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'].append(
 #         'rest_framework.renderers.BrowsableAPIRenderer',
 # )

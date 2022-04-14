@@ -9,7 +9,8 @@ from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from authors_api.settings.production import DEFAULT_FROM_EMAIL
+from authors_api.settings.local import DEFAULT_FROM_EMAIL
+# from authors_api.settings.production import DEFAULT_FROM_EMAIL
 
 from .exceptions import CantFollowYourself, NotYourProfile
 from .models import Profile
@@ -18,6 +19,7 @@ from .renderers import ProfileJSONRenderer, ProfilesJSONRenderer
 from .serializers import FollowingSerializer, ProfileSerializer, UpdateProfileSerializer
 
 User = get_user_model()
+
 
 # @api_view(["GET"])
 # @permission_classes([permissions.AllowAny])
@@ -31,11 +33,11 @@ User = get_user_model()
 # @permission_classes([permissions.AllowAny])
 # def get_profile_details(request,username):
 #     try:
-#         user_profile = Profile.objects.get(user__username=username)
+#         profile = Profile.objects.get(user__username=username)
 #     except Profile.DoesNotExist:
-#         raise NotFound('A profile with this username does not exist...')
+#         raise NotFound('A profile with this username does not exist.')
 
-#     serializer = ProfileSerializer(user_profile, many=False)
+#     serializer = ProfileSerializer(profile, many=False)
 #     formatted_response = {"profile": serializer.data}
 #     return Response (formatted_response, status=status.HTTP_200_OK)
 
@@ -92,15 +94,14 @@ class UpdateProfileAPIView(APIView):
 
 @api_view(["GET"])
 @permission_classes([permissions.IsAuthenticated])
-def get_my_followers(request, username):
+def get_followers(request, username):
     try:
-        specific_user = User.objects.get(username=username)
+        user = User.objects.get(username=username)
     except User.DoesNotExist:
         raise NotFound("User with that username does not exist")
 
-    userprofile_instance = Profile.objects.get(user__pkid=specific_user.pkid)
-
-    user_followers = userprofile_instance.followed_by.all()
+    user_profile = Profile.objects.get(user__pkid=user.pkid)
+    user_followers = user_profile.followed_by.all()
     serializer = FollowingSerializer(user_followers, many=True)
     formatted_response = {
         "status_code": status.HTTP_200_OK,
@@ -117,17 +118,17 @@ class FollowUnfollowAPIView(generics.GenericAPIView):
 
     def get(self, request, username):
         try:
-            specific_user = User.objects.get(username=username)
+            user = User.objects.get(username=username)
         except User.DoesNotExist:
             raise NotFound("User with that username does not exist")
 
-        userprofile_instance = Profile.objects.get(user__pkid=specific_user.pkid)
-        my_following_list = userprofile_instance.following_list()
-        serializer = ProfileSerializer(my_following_list, many=True)
+        user_profile = Profile.objects.get(user__pkid=user.pkid)
+        user_following_list = user_profile.following_list()
+        serializer = ProfileSerializer(user_following_list, many=True)
         formatted_response = {
             "status_code": status.HTTP_200_OK,
-            "users_i_follow": serializer.data,
-            "num_users_i_follow": len(serializer.data),
+            "user_following_list": serializer.data,
+            "user_following_list_len": len(serializer.data),
         }
         return Response(formatted_response, status=status.HTTP_200_OK)
 
@@ -140,30 +141,30 @@ class FollowUnfollowAPIView(generics.GenericAPIView):
         if specific_user.pkid == request.user.pkid:
             raise CantFollowYourself
 
-        userprofile_instance = Profile.objects.get(user__pkid=specific_user.pkid)
-        current_user_profile = request.user.profile
+        specific_user_profile = Profile.objects.get(user__pkid=specific_user.pkid)
+        user_profile = request.user.profile
 
-        if current_user_profile.check_following(userprofile_instance):
+        if user_profile.check_following(specific_user_profile):
             formatted_response = {
                 "status_code": status.HTTP_400_BAD_REQUEST,
                 "errors": f"You already follow {specific_user.username}",
             }
             return Response(formatted_response, status=status.HTTP_400_BAD_REQUEST)
 
-        current_user_profile.follow(userprofile_instance)
+        user_profile.follow(specific_user_profile)
 
         subject = "A new user follows you"
-        message = f"Hi there {specific_user.username}!!, the user {current_user_profile.user.username} now follows you"
+        message = f"Hi there, {specific_user.username}! The user {user_profile.user.username} is now following you!"
         from_email = DEFAULT_FROM_EMAIL
         recipient_list = [specific_user.email]
         send_mail(subject, message, from_email, recipient_list, fail_silently=True)
 
-        return Response(
-            {
-                "status_code": status.HTTP_200_OK,
-                "detail": f"You now follow {specific_user.username}",
-            }
-        )
+        formatted_response = {
+            "status_code": status.HTTP_200_OK,
+            "detail": f"You now follow {specific_user.username}",
+        }
+
+        return Response(formatted_response)
 
     def delete(self, request, username):
         try:
@@ -171,17 +172,17 @@ class FollowUnfollowAPIView(generics.GenericAPIView):
         except User.DoesNotExist:
             raise NotFound("User with that username does not exist")
 
-        userprofile_instance = Profile.objects.get(user__pkid=specific_user.pkid)
-        current_user_profile = request.user.profile
+        specific_user_profile = Profile.objects.get(user__pkid=specific_user.pkid)
+        user_profile = request.user.profile
 
-        if not current_user_profile.check_following(userprofile_instance):
+        if not user_profile.check_following(specific_user_profile):
             formatted_response = {
                 "status_code": status.HTTP_400_BAD_REQUEST,
                 "errors": f"You do not follow {specific_user.username}",
             }
             return Response(formatted_response, status=status.HTTP_400_BAD_REQUEST)
 
-        current_user_profile.unfollow(userprofile_instance)
+        user_profile.unfollow(specific_user_profile)
         formatted_response = {
             "status_code": status.HTTP_200_OK,
             "detail": f"You have unfollowed {specific_user.username}",
