@@ -17,14 +17,17 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
+    path(settings.ADMIN_URL, admin.site.urls),
+
     path("redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
     path("swagger/", schema_view.with_ui('swagger', cache_timeout=0)),
     re_path(r"^swagger(?P<format>\.json|\.yaml)$", schema_view.without_ui(cache_timeout=0), name="schema-json"),
-    path(settings.ADMIN_URL, admin.site.urls),
+
     path("api/v1/auth/", include("djoser.urls")),
     path("api/v1/auth/", include("djoser.urls.jwt")),
     path("api/v1/profiles/", include("core_apps.profiles.urls")),
 ]
-title = "Swifty Authors API Admin portal"
-admin.site.site_header = admin.site.site_title = title
-admin.site.index_title = _(f"Welcome to the {title}")
+
+title = "Swifty Authors API"
+admin.site.site_title = admin.site.site_header = title
+admin.site.index_title = _(f"Welcome to {title}")
