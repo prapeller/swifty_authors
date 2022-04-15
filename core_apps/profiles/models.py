@@ -1,6 +1,6 @@
-from django.db import models
 from django.contrib.auth import get_user_model
-from django.utils.translation import gettext_lazy as _
+from django.db import models
+from django.utils.translation import gettext as _
 from django_countries.fields import CountryField
 from phonenumber_field.modelfields import PhoneNumberField
 
@@ -15,10 +15,8 @@ class Profile(TimeStampedUUIDModel):
         FEMALE = "female", _("female")
         OTHER = "other", _("other")
 
-    user = models.OneToOneField(User, related_name="profile", on_delete=models.CASCADE)
-    phone_number = PhoneNumberField(
-        verbose_name=_("phone number"), max_length=30, default="+79999999999"
-    )
+    user = models.OneToOneField(User, verbose_name=_("user"), related_name="profile", on_delete=models.CASCADE)
+    phone_number = PhoneNumberField(verbose_name=_("phone number"), max_length=30, default="+79999999999")
     about_me = models.TextField(
         verbose_name=_("about me"),
         default=_("say something about yourself"),
@@ -40,7 +38,7 @@ class Profile(TimeStampedUUIDModel):
         null=False,
     )
     profile_photo = models.ImageField(
-        verbose_name=_("profile photo"), default="/profile_default.png"
+        verbose_name=_("profile photo"), default="profile_default.png"
     )
     twitter_handle = models.CharField(
         verbose_name=_("twitter_handle"), max_length=20, blank=True
@@ -48,6 +46,10 @@ class Profile(TimeStampedUUIDModel):
     follows = models.ManyToManyField(
         "self", symmetrical=False, related_name="followed_by", blank=True
     )
+
+    class Meta:
+        verbose_name = _("profile")
+        verbose_name_plural = _("profiles")
 
     def __str__(self):
         return f"{self.user.username}'s profile"
