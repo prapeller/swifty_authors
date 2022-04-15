@@ -1,5 +1,6 @@
 from datetime import timedelta
 from pathlib import Path
+
 import environ
 
 env = environ.Env()
@@ -82,8 +83,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "authors_api.wsgi.application"
 
-#export DATABASE_URL=postgres://postgres:postgres@127.0.0.1:5432/authors_db
-DATABASES = {"default": env.db("DATABASE_URL",)}
+# export DATABASE_URL=postgres://postgres:postgres@127.0.0.1:5432/authors_db
+DATABASES = {"default": env.db("DATABASE_URL", )}
 DATABASES["default"]["ATOMIC_REQUESTS"] = True
 
 PASSWORD_HASHERS = [
@@ -94,10 +95,10 @@ PASSWORD_HASHERS = [
 ]
 
 AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",},
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",},
-    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",},
-    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator", },
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator", },
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator", },
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator", },
 ]
 
 LANGUAGE_CODE = "en-us"
@@ -130,9 +131,9 @@ REST_FRAMEWORK = {
     ],
 
     # "DEFAULT_RENDERER_CLASSES": [
-        # "rest_framework.renderers.JSONRenderer",
-        # 'djangorestframework_camel_case.render.CamelCaseJSONRenderer',
-        # 'djangorestframework_camel_case.render.CamelCaseBrowsableAPIRenderer',
+    # "rest_framework.renderers.JSONRenderer",
+    # 'djangorestframework_camel_case.render.CamelCaseJSONRenderer',
+    # 'djangorestframework_camel_case.render.CamelCaseBrowsableAPIRenderer',
     # ],
 
     # 'DEFAULT_PARSER_CLASSES': (
@@ -146,16 +147,16 @@ REST_FRAMEWORK = {
     # "PAGE_SIZE": 100,
 
     # "DEFAULT_PERMISSION_CLASSES": [
-        # permissions to makeOperations/toViewOnly for authenticated users in current session
-        # "rest_framework.permissions.IsAuthenticated",
-        # "rest_framework.permissions.IsAuthenticatedOrReadOnly",
+    # permissions to makeOperations/toViewOnly for authenticated users in current session
+    # "rest_framework.permissions.IsAuthenticated",
+    # "rest_framework.permissions.IsAuthenticatedOrReadOnly",
 
-        # permissions according to auth_permission
-        # "rest_framework.permissions.DjangoModelPermissions",
-        # "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly",
+    # permissions according to auth_permission
+    # "rest_framework.permissions.DjangoModelPermissions",
+    # "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly",
 
-        # for making own permissions
-        # "rest_framework.permissions.BasePermission",
+    # for making own permissions
+    # "rest_framework.permissions.BasePermission",
     # ],
 
     # "DEFAULT_VERSIONING_CLASS":
@@ -174,19 +175,38 @@ REST_FRAMEWORK = {
     # requests.get('http://127.0.0.1:8000/api/users/', headers={'Accept': 'application/json; version=v2'})
     # 'rest_framework.versioning.AcceptHeaderVersioning',
 
-
 }
 
 SIMPLE_JWT = {
-    "AUTH_HEADER_TYPES": (
-        "Bearer",
-        "JWT",
-    ),
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': False,
+    'UPDATE_LAST_LOGIN': False,
+
+    'ALGORITHM': 'HS256',
     "SIGNING_KEY": env("SIGNING_KEY"),
-    "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
-    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
+    'VERIFYING_KEY': None,
+    'AUDIENCE': None,
+    'ISSUER': None,
+    'JWK_URL': None,
+    'LEEWAY': 0,
+
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
+    'USER_AUTHENTICATION_RULE': 'rest_framework_simplejwt.authentication.default_user_authentication_rule',
+
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'TOKEN_TYPE_CLAIM': 'token_type',
+    'TOKEN_USER_CLASS': 'rest_framework_simplejwt.models.TokenUser',
+
+    'JTI_CLAIM': 'jti',
+
+    'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
+    'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5),
+    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
 }
 
 DJOSER = {
@@ -230,7 +250,6 @@ CELERY_TIMEZONE = TIME_ZONE
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
-
 
 LOGGING = {
     "version": 1,
