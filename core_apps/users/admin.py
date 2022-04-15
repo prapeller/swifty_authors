@@ -7,7 +7,7 @@ from .models import User
 
 
 class UserAdmin(BaseUserAdmin):
-    ordering = ("email",)
+    ordering = ("pkid",)
     add_form = UserCreationForm
     form = UserChangeForm
     model = User
@@ -15,17 +15,18 @@ class UserAdmin(BaseUserAdmin):
     list_display_links = ("id", "email")
     list_filter = ("email", "username", "first_name", "last_name", "is_staff")
     fieldsets = (
-        (_("Login credentials"), {"fields": ("email", "password")}),
+        (_("Credentials"), {"fields": ("email", "password")}),
         (_("Personal information"), {"fields": ("first_name", "last_name")}),
-        (_("Permissions and Groups"),
-         {"fields": ("is_active", "is_staff", "is_superuser", "groups", "user_permissions")}),
+        (_("Status"), {"fields": ("is_active", "is_staff", "is_superuser")}),
+        (_("Permissions"), {"fields": ("groups", "user_permissions")}),
         (_("Important dates"), {"fields": ("date_joined", "last_login")}),
     )
     add_fieldsets = (
-        (None, {
-            "classes": ("wide",),
-            "fields": ("email", "password1", "password2", "is_staff", "is_active"),
+        (_('Credentials'), {
+            'classes': ('wide',),
+            'fields': ('email', 'username', 'password1', 'password2')
         }),
+        (_('Status'), {'fields': ('is_active', 'is_staff', 'is_superuser')}),
     )
     search_fields = ("email", "username", "first_name", "last_name")
 
