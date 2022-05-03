@@ -38,12 +38,20 @@ THIRD_PARTY_APPS = [
     "djcelery_email",
     "djoser",
     "rest_framework_simplejwt",
+    "haystack",
+    "drf_haystack",
 ]
 
 LOCAL_APPS = [
     "core_apps.common",
     "core_apps.users",
     "core_apps.profiles",
+    "core_apps.articles",
+    "core_apps.comments",
+    "core_apps.favorites",
+    "core_apps.ratings",
+    "core_apps.reactions",
+    "core_apps.search",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -95,10 +103,14 @@ PASSWORD_HASHERS = [
 ]
 
 AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator", },
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator", },
-    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator", },
-    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator", },
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator", },
+    {
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator", },
+    {
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator", },
+    {
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator", },
 ]
 
 LANGUAGE_CODE = "en-us"
@@ -251,6 +263,15 @@ CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 
+HAYSTACK_CONNECTIONS = {
+    "default": {
+        "ENGINE": "haystack.backends.whoosh_backend.WhooshEngine",
+        "PATH": ROOT_DIR / "whoosh_index",
+    }
+}
+HAYSTACK_SEARCH_RESULTS_PER_PAGE = 10
+HAYSTACK_SIGNAL_PROCESSOR = "haystack.signals.RealtimeSignalProcessor"
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -269,3 +290,5 @@ LOGGING = {
     "root": {
         "level": "INFO", "handlers": ["console"]}
 }
+
+AUTOSLUG_SLUGIFY_FUNCTION = "slugify.slugify"

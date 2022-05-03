@@ -1,25 +1,9 @@
-import json
-
-from rest_framework.renderers import JSONRenderer
+from core_apps.common.renderers import SingleObjectJSONRenderer, MultipleObjectsJSONRenderer
 
 
-class ProfileJSONRenderer(JSONRenderer):
-    charset = "utf-8"
-
-    def render(self, data, accepted_media_type=None, renderer_context=None):
-        status_code = renderer_context["response"].status_code
-
-        if data.get("errors"):
-            return super().render(data)
-        return json.dumps({"status_code": status_code, "profile": data})
+class ProfileJSONRenderer(SingleObjectJSONRenderer):
+    object_name = "profile"
 
 
-class ProfilesJSONRenderer(JSONRenderer):
-    charset = "utf-8"
-
-    def render(self, data, accepted_media_type=None, renderer_context=None):
-        status_code = renderer_context["response"].status_code
-
-        if data.get("errors"):
-            return super().render(data)
-        return json.dumps({"status_code": status_code, "profiles": data})
+class ProfilesJSONRenderer(MultipleObjectsJSONRenderer):
+    objects_name = "profiles"

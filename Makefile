@@ -4,6 +4,9 @@ checkconfig:
 build:
 	docker-compose -f local.yml up --build -d --remove-orphans
 
+rebuildindex:
+	docker-compose -f local.yml run --rm api python manage.py rebuild_index
+
 checklogs:
 	docker-compose -f local.yml logs
 
@@ -28,8 +31,14 @@ up:
 restart:
 	docker-compose -f local.yml restart
 
-pip:
+pipinstalllocal:
 	docker-compose -f local.yml run --rm api pip install -r requirements/local.txt
+
+pipinstalldevelopment:
+	docker-compose -f local.yml run --rm api pip install -r requirements/local.txt
+
+piplist:
+	docker-compose -f local.yml run --rm api pip list
 
 migrate:
 	docker-compose -f local.yml run --rm api python3 manage.py migrate
