@@ -6,9 +6,9 @@ from .views import (
 )
 
 urlpatterns = [
-    path("list/", ProfileListAPIView.as_view(), name="profile-list"),
-    path("detail/<str:username>/", ProfileDetailAPIView.as_view(), name="profile-detail"),
-    path("update/<str:username>/", UpdateProfileAPIView.as_view(), name="profile-update"),
-    path("followers/<str:username>/", get_followers, name="profile-followers"),
-    path("follow-unfollow/<str:username>/", FollowUnfollowAPIView.as_view(), name="profile-follow-unfollow"),
+    path("list/", ProfileListAPIView.as_view(), name="profiles-list"),
+    path("detail/<str:username>/", ProfileDetailAPIView.as_view(), name="profiles-detail"),
+    path("update/<str:username>/", UpdateProfileAPIView.as_view(), name="profiles-update"),
+    path("followers/<str:username>/", get_followers, name="profiles-followers"),
+    path("follow-unfollow/<str:username>/", FollowUnfollowAPIView.as_view(), name="profiles-follow-unfollow"),
 ]
